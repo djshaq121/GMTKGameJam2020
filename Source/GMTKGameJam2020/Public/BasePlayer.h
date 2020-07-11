@@ -8,6 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UCapsuleComponent;
 
 UCLASS()
 class GMTKGAMEJAM2020_API ABasePlayer : public ACharacter
@@ -28,6 +29,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
 	void MoveForward(float Value);
@@ -50,6 +54,10 @@ private:
 
 	void WallSlide();
 
+	void CanJump();
+
+	void DisableJump();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArm;
@@ -66,18 +74,31 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BasePitchRate;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float jumpHeight = 600.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float fallMultipler = 2.5f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float lowJumpMultipler = 2.f;
 
 	bool bCanJump = false;
 
+	bool bCanWallJump = false;
+
 	bool bJumpHeld = false;
 
+	bool bDisableJumpOnce = true;
+
+	FTimerHandle JumpBufferTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float JumpBuffTime = 0.1;
+
 	float PlayerGravity = 1.f;
+
+	UCapsuleComponent* RootCapsule;
+
+	FVector WallJumpDirection;
 };
