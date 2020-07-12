@@ -33,10 +33,9 @@ void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Target)
+	if (bRecording)
 	{
-		PlayerPoints.EmplaceAt(0, new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
-		//UE_LOG(LogTemp, Warning, TEXT("Pos %s "), *Target->GetActorLocation().ToString());
+		Record();
 	}
 }
 
@@ -47,6 +46,23 @@ void ASpawner::BeginSpawning()
 
 	bSpawning = true;
 	GetWorldTimerManager().SetTimer(SpawnRateHandler, this, &ASpawner::Spawn, TimeBetweenSpawningEnemy, true, 1.f);
+}
+
+void ASpawner::StartRecordingTargetPoint()
+{
+	if (bRecording)
+		return;
+
+	bRecording = true;
+}
+
+void ASpawner::Record()
+{
+	if (Target)
+	{
+		PlayerPoints.EmplaceAt(0, new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
+		//UE_LOG(LogTemp, Warning, TEXT("Pos %s "), *Target->GetActorLocation().ToString());
+	}
 }
 
 void ASpawner::Spawn()

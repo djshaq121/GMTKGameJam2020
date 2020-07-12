@@ -62,6 +62,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 		void BeginSpawning();
 
+	UFUNCTION(BlueprintCallable, Category = "Spawner")
+	void StartRecordingTargetPoint();
+
+	void Record();
+
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
 	float TimeBetweenSpawningEnemy = 1.0f;
@@ -76,6 +82,8 @@ private:
 	void Spawn();
 
 	bool bSpawning = false;
+
+	bool bRecording = false;
 
 	TArray<AEnemy*> EnemiesSpawned;
 };
