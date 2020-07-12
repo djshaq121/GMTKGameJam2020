@@ -73,6 +73,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* Camera;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	USoundBase* WallJumpSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	USoundBase* DamageSound;
+
+
 private:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -109,6 +116,7 @@ private:
 	UCapsuleComponent* RootCapsule;
 
 	FVector WallJumpDirection;
+
 
 	
 };

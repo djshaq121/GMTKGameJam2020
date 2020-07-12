@@ -9,6 +9,7 @@
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
 #include "HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABasePlayer::ABasePlayer()
@@ -123,6 +124,11 @@ void ABasePlayer::OnHealthChanged(UHealthComponent * OwningHealthComp, float Hea
 	{
 		// Player is dead
 	}
+	else
+	{
+		if (DamageSound)
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DamageSound, GetActorLocation());
+	}
 }
 
 void ABasePlayer::MoveForward(float Value)
@@ -214,6 +220,10 @@ void ABasePlayer::WallJump()
 	//FVector LaunchVelocity = WallJumpDirection * 500.f;
 	ACharacter::LaunchCharacter(LaunchVelocity, true, true);
 	SetActorRotation(WallJumpDirection.Rotation());
+
+	if(WallJumpSound)
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WallJumpSound, GetActorLocation());
+
 }
 
 
