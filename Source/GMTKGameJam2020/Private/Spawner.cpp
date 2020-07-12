@@ -45,7 +45,7 @@ void ASpawner::BeginSpawning()
 		return;
 
 	bSpawning = true;
-	GetWorldTimerManager().SetTimer(SpawnRateHandler, this, &ASpawner::Spawn, TimeBetweenSpawningEnemy, true, 1.f);
+	GetWorldTimerManager().SetTimer(SpawnRateHandler, this, &ASpawner::Spawn, TimeBetweenSpawningEnemy, true, FirstSpawnDelay);
 }
 
 void ASpawner::StartRecordingTargetPoint()
@@ -58,7 +58,7 @@ void ASpawner::StartRecordingTargetPoint()
 
 void ASpawner::Record()
 {
-	if (Target)
+	if (Target && bCanRecord)
 	{
 		PlayerPoints.EmplaceAt(0, new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
 		//UE_LOG(LogTemp, Warning, TEXT("Pos %s "), *Target->GetActorLocation().ToString());
@@ -71,14 +71,28 @@ void ASpawner::Spawn()
 	if (EnemiesSpawned.Num() >= SpawnAmount)
 	{
 		GetWorldTimerManager().ClearTimer(SpawnRateHandler);
-		UE_LOG(LogTemp, Warning, TEXT("No more "));
+		//UE_LOG(LogTemp, Warning, TEXT("No more "));
 		return;
 	}
 		
-	UE_LOG(LogTemp, Warning, TEXT("Keep Spawning "));
+	//UE_LOG(LogTemp, Warning, TEXT("Keep Spawning "));
 	// Spawn eNEMY
 	auto EnemySpanwed = GetWorld()->SpawnActor<AEnemy>(EnemyToSpawn, GetActorLocation(), GetActorRotation());
-	EnemySpanwed->SpawnerOwner = this;
-	EnemiesSpawned.Add(EnemySpanwed);
+	if (EnemySpanwed)
+	{
+		EnemySpanwed->SpawnerOwner = this;
+		EnemiesSpawned.Add(EnemySpanwed);
+	}
+}
+
+void ASpawner::StopRecording()
+{
+	bCanRecord = false;
+	PlayerPoints.Empty();
+}
+
+void ASpawner::DestroySpawnedEnemies()
+{
+
 }
 

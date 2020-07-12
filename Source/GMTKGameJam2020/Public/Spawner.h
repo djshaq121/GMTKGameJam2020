@@ -67,8 +67,15 @@ public:
 
 	void Record();
 
+	void StopRecording();
+
+	void DestroySpawnedEnemies();
+
 
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
+	float FirstSpawnDelay = 2.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
 	float TimeBetweenSpawningEnemy = 1.0f;
 
@@ -84,6 +91,8 @@ private:
 	bool bSpawning = false;
 
 	bool bRecording = false;
+
+	bool bCanRecord = true;
 
 	TArray<AEnemy*> EnemiesSpawned;
 };

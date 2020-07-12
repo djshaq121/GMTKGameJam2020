@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
+#include "HealthComponent.h"
 
 // Sets default values
 ABasePlayer::ABasePlayer()
@@ -42,6 +43,13 @@ void ABasePlayer::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerGravity = GetWorld()->GetGravityZ();
+
+	HealthComponent = this->FindComponentByClass<UHealthComponent>();
+
+	if (HealthComponent)
+	{
+		HealthComponent->OnHealthChange.AddDynamic(this, &ABasePlayer::OnHealthChanged);
+	}
 }
 
 // Called every frame
@@ -109,6 +117,14 @@ void ABasePlayer::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 			
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Grounded: %s"), (grounded ? TEXT("True") : TEXT("False")));
+	}
+}
+
+void ABasePlayer::OnHealthChanged(UHealthComponent * OwningHealthComp, float Health, float HealthDelta, FVector HitDirection, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	if (Health <= 0)
+	{
+		// Player is dead
 	}
 }
 

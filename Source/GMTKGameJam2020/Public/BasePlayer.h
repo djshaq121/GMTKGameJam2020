@@ -9,6 +9,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UCapsuleComponent;
+class UHealthComponent;
 
 UCLASS()
 class GMTKGAMEJAM2020_API ABasePlayer : public ACharacter
@@ -33,6 +34,13 @@ public:
 	UFUNCTION()
 	void OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
+
+protected:
+	UFUNCTION()
+		void OnHealthChanged(UHealthComponent* OwningHealthComp, float Health, float HealthDelta, FVector HitDirection, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UHealthComponent* HealthComponent;
 private:
 	void MoveForward(float Value);
 
@@ -101,4 +109,6 @@ private:
 	UCapsuleComponent* RootCapsule;
 
 	FVector WallJumpDirection;
+
+	
 };
