@@ -41,6 +41,8 @@ void ASpawner::Tick(float DeltaTime)
 
 void ASpawner::BeginSpawning()
 {
+	StartRecordingTargetPoint();
+
 	if (bSpawning || !EnemyToSpawn)
 		return;
 

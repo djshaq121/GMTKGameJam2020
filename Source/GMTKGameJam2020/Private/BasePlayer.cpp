@@ -105,16 +105,13 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Called Hit Wall"));
 	if (GetCharacterMovement() && GetCharacterMovement()->IsFalling())
 	{
-		if (Hit.Normal.Y < 0.1f)
+		//UE_LOG(LogTemp, Warning, TEXT("validWallVector: %s"), *FString::SanitizeFloat(validWallVector.GetSafeNormal().Z));
+		if (Hit.Normal.Z < 0.1f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Touching Wall"));
 			WallJumpDirection = Hit.Normal;
 			bCanWallJump = true;
-			//DrawDebugLine(GetWorld(), Hit.ImpactPoint, Hit.ImpactNormal, FColor::Red, false, 3);
-			
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Grounded: %s"), (grounded ? TEXT("True") : TEXT("False")));
 	}
