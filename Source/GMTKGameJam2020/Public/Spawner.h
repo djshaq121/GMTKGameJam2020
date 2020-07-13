@@ -7,6 +7,7 @@
 #include "Spawner.generated.h"
 
 class AEnemy;
+class UHealthComponent;
 
 USTRUCT(BlueprintType)
 struct FPlayerPoint
@@ -49,10 +50,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//TArray<float> itemArray;
-
-	TArray<FPlayerPoint*> PlayerPoints;
+	TDoubleLinkedList<FPlayerPoint*> PlayerPoints;
 		
 	APawn* Target;
 
@@ -64,13 +62,21 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Spawner")
 	void StartRecordingTargetPoint();
+	
+	UFUNCTION()
+	void OnTargetHealthChange(UHealthComponent * OwningHealthComp, float Health, float HealthDelta, FVector HitDirection, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser);
 
 	void Record();
 
 	void StopRecording();
 
+	void StartRemovingRecords();
+
+	void RemoveFirstRecord();
+
 	void DestroySpawnedEnemies();
 
+	void ResetRecording();
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
@@ -80,11 +86,16 @@ private:
 	float TimeBetweenSpawningEnemy = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
+	float RemoveRecordTimerDelay = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
 	int32 SpawnAmount = 5;
 
 	int32 CurrentNumberOfSpawn = 0;
 
 	FTimerHandle SpawnRateHandler;
+
+	FTimerHandle RemoveRecordingHandler;
 
 	void Spawn();
 
@@ -94,5 +105,9 @@ private:
 
 	bool bCanRecord = true;
 
+	bool bCanRemoveRecords = false;
+
 	TArray<AEnemy*> EnemiesSpawned;
+
+	UHealthComponent* TargetHealthComponent;
 };

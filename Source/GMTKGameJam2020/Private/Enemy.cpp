@@ -18,6 +18,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	FindFirstPlayerPoint();
 }
 
 // Called every frame
@@ -28,31 +29,48 @@ void AEnemy::Tick(float DeltaTime)
 	FollowTarget();
 }
 
+void AEnemy::FindFirstPlayerPoint()
+{
+	if (bFoundFirstPlayerPoint || CurrentPoint)
+		return;
+
+	if (!SpawnerOwner || SpawnerOwner->PlayerPoints.Num() <= 0)
+		return;
+
+	CurrentPoint = SpawnerOwner->PlayerPoints.GetHead();
+	bFoundFirstPlayerPoint = true;
+}
+
 void AEnemy::FollowTarget()
 {
+	FindFirstPlayerPoint();
 
 	if (!SpawnerOwner || SpawnerOwner->PlayerPoints.Num() <= 0)
 		return;
 	
-	
-	//SpawnerOwner->PlayerPoints
-	int32 index = SpawnerOwner->PlayerPoints.Num() - PointIndex - 1;
-	if (index < 0)
+	if (!CurrentPoint)
 		return;
 
-	auto playerPoint = SpawnerOwner->PlayerPoints[index];
+
+	//auto TargetList = SpawnerOwner->PlayerPoints.GetTail;
+	//SpawnerOwner->PlayerPoints
+	//int32 index = SpawnerOwner->PlayerPoints.Num() - PointIndex - 1;
+	//if (index < 0)
+		//return;
+
+	auto playerPoint = CurrentPoint->GetValue();
+	if (!playerPoint)
+		return;
+
 	auto loc = playerPoint->position;
 	auto rot = playerPoint->rotation; 
 
 	SetActorLocationAndRotation(loc, rot);
-	//UE_LOG(LogTemp, Warning, TEXT("Set Transform "));
-	PointIndex++;
-	/*FPlayerPoint* playerPoint = SpawnerOwner->PlayerPoints.Peek();
-	auto loc = playerPoint->position;
-	auto rot = playerPoint->rotation;*/
 
-
-	//SetActorLocationAndRotation()
+	CurrentPoint = CurrentPoint->GetNextNode();
+	////UE_LOG(LogTemp, Warning, TEXT("Set Transform "));
+	
+	
 }
 
 

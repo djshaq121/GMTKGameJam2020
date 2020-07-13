@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
+
 class ASpawner;
+struct FPlayerPoint;
 
 UCLASS()
 class GMTKGAMEJAM2020_API AEnemy : public ACharacter
@@ -24,6 +26,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void FindFirstPlayerPoint();
+
 	ASpawner* SpawnerOwner;
 private:
 
@@ -31,8 +35,9 @@ private:
 
 	int32 PointIndex = 0;
 
-	
+	TDoubleLinkedList<FPlayerPoint*>::TDoubleLinkedListNode* CurrentPoint;
 
+	bool bFoundFirstPlayerPoint = false;
 
 
 };

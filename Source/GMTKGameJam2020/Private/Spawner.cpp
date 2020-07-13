@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Spawner.h"
-#include "Containers/CircularQueue.h"
 #include "TimerManager.h"
 #include "Enemy.h"
+#include "..\Public\Spawner.h"
+#include "HealthComponent.h"
+
 
 
 // Sets default values
@@ -23,9 +25,32 @@ void ASpawner::BeginPlay()
 
 	if (Target)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Some warning message %s "), *Target->GetName());
+		TargetHealthComponent = Target->FindComponentByClass<UHealthComponent>();
+		if (TargetHealthComponent)
+		{
+			TargetHealthComponent->OnHealthChange.AddDynamic(this, &ASpawner::OnTargetHealthChange);
+		}
+		else
+		{
+			Target = nullptr;
+			UE_LOG(LogTemp, Error, TEXT("Target in %s needs to have HealthComponent "), *GetName());
+		}
 	}
 		
+}
+
+void ASpawner::OnTargetHealthChange(UHealthComponent * OwningHealthComp, float Health, float HealthDelta, FVector HitDirection, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	if (Health <= 0)
+		ResetRecording();
+}
+
+void ASpawner::ResetRecording()
+{
+	StopRecording();
+	// Stop Spawning
+	GetWorldTimerManager().ClearTimer(SpawnRateHandler);
+	PlayerPoints.Empty();
 }
 
 // Called every frame
@@ -36,6 +61,11 @@ void ASpawner::Tick(float DeltaTime)
 	if (bRecording)
 	{
 		Record();
+	}
+
+	if (bCanRemoveRecords)
+	{
+		RemoveFirstRecord();
 	}
 }
 
@@ -61,10 +91,7 @@ void ASpawner::StartRecordingTargetPoint()
 void ASpawner::Record()
 {
 	if (Target && bCanRecord)
-	{
-		PlayerPoints.EmplaceAt(0, new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
-		//UE_LOG(LogTemp, Warning, TEXT("Pos %s "), *Target->GetActorLocation().ToString());
-	}
+		PlayerPoints.AddTail(new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
 }
 
 void ASpawner::Spawn()
@@ -73,7 +100,11 @@ void ASpawner::Spawn()
 	if (EnemiesSpawned.Num() >= SpawnAmount)
 	{
 		GetWorldTimerManager().ClearTimer(SpawnRateHandler);
-		//UE_LOG(LogTemp, Warning, TEXT("No more "));
+	
+		// Remove recording after a period of time 
+		if(!bCanRemoveRecords)
+			GetWorldTimerManager().SetTimer(RemoveRecordingHandler, this, &ASpawner::StartRemovingRecords, RemoveRecordTimerDelay, false);
+
 		return;
 	}
 		
@@ -90,7 +121,20 @@ void ASpawner::Spawn()
 void ASpawner::StopRecording()
 {
 	bCanRecord = false;
-	PlayerPoints.Empty();
+	bRecording = false;
+}
+
+void ASpawner::StartRemovingRecords()
+{
+	bCanRemoveRecords = true;
+}
+
+void ASpawner::RemoveFirstRecord()
+{
+	if (PlayerPoints.Num() <= 0)
+		return;
+
+	PlayerPoints.RemoveNode(PlayerPoints.GetHead());
 }
 
 void ASpawner::DestroySpawnedEnemies()
