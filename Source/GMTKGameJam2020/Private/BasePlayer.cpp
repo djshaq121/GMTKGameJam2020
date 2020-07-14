@@ -61,21 +61,22 @@ void ABasePlayer::Tick(float DeltaTime)
 	if (!GetCharacterMovement())
 		return;
 
-	if (!GetCharacterMovement()->IsFalling())
+	LastTimeJumpPressed -= DeltaTime;
+	if (!GetCharacterMovement()->IsFalling() && LastTimeJumpPressed > 0)
+	{
+			Jumping();
+	} 
+	else if (!GetCharacterMovement()->IsFalling())
 	{
 		bCanJump = true;
 		bCanWallJump = false;
 		bDisableJumpOnce = true;
 		WallJumpDirection = FVector::ZeroVector;
 	}
-	else
+	else if(GetCharacterMovement()->IsFalling() && bDisableJumpOnce)
 	{
-		if (bDisableJumpOnce)
-		{
 			bDisableJumpOnce = false;
-			GetWorldTimerManager().SetTimer(JumpBufferTimer, this, &ABasePlayer::DisableJump, 1, false, JumpBuffTime);
-		}
-		
+			GetWorldTimerManager().SetTimer(JumpBufferTimerHandle, this, &ABasePlayer::DisableJump, 1, false, JumpBufferCoyoteTime);
 	}
 
 	if (GetVelocity().Z < 0)
@@ -89,13 +90,14 @@ void ABasePlayer::Tick(float DeltaTime)
 	
 }
 
+
 // Called to bind functionality to input
 void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABasePlayer::StartJump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ABasePlayer::EndJump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABasePlayer::JumpPressed);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ABasePlayer::JumpReleased);
 
 	PlayerInputComponent->BindAxis("Turn", this, &ABasePlayer::Turn);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ABasePlayer::MoveForward);
@@ -169,25 +171,18 @@ void ABasePlayer::LookUp(float Rate)
 	AddControllerPitchInput(Rate * BasePitchRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ABasePlayer::StartJump()
+void ABasePlayer::JumpPressed()
 {
-	//ACharacter::LaunchCharacter(FVector(0,0, jumpHeight), false, true);
-
+	LastTimeJumpPressed = JumpBufferTimer;
 	if (bCanJump)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Normal Jump"));
 		Jumping();
-	}
-	else if(bCanWallJump)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Wall Jump"));
+	if (bCanWallJump)
 		WallJump();
-	}
-	
+
 	bJumpHeld = true;
 }
 
-void ABasePlayer::EndJump()
+void ABasePlayer::JumpReleased()
 {
 	bJumpHeld = false;
 }

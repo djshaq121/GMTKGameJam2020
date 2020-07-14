@@ -50,9 +50,9 @@ private:
 
 	void LookUp(float Rate);
 
-	void StartJump();
+	void JumpPressed();
 
-	void EndJump();
+	void JumpReleased();
 
 	void Jumping();
 
@@ -98,6 +98,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float lowJumpMultipler = 2.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "1.0"))
+	float JumpBufferCoyoteTime = 0.15;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "1.0"))
+	float JumpBufferTimer = 0.15;
+
+	float LastTimeJumpPressed = 0;
+
 	bool bCanJump = false;
 
 	bool bCanWallJump = false;
@@ -106,10 +114,7 @@ private:
 
 	bool bDisableJumpOnce = true;
 
-	FTimerHandle JumpBufferTimer;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float JumpBuffTime = 0.1;
+	FTimerHandle JumpBufferTimerHandle;
 
 	float PlayerGravity = 1.f;
 
