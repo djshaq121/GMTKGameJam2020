@@ -5,7 +5,8 @@
 #include "Enemy.h"
 #include "..\Public\Spawner.h"
 #include "HealthComponent.h"
-
+#include "BasePlayer.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -21,7 +22,7 @@ void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Target = GetWorld()->GetFirstPlayerController()->GetPawn();
+	Target = Cast<ABasePlayer>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	if (Target)
 	{
@@ -91,7 +92,10 @@ void ASpawner::StartRecordingTargetPoint()
 void ASpawner::Record()
 {
 	if (Target && bCanRecord)
-		PlayerPoints.AddTail(new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation()));
+	{
+		PlayerPoints.AddTail(new FPlayerPoint(Target->GetActorLocation(), Target->GetActorRotation(), Target->GetVelocity(), Target->GetCharacterMovement()->IsFalling()));
+	}
+		
 }
 
 void ASpawner::Spawn()

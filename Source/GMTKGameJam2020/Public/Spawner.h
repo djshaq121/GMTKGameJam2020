@@ -8,6 +8,7 @@
 
 class AEnemy;
 class UHealthComponent;
+class ABasePlayer;
 
 USTRUCT(BlueprintType)
 struct FPlayerPoint
@@ -20,15 +21,23 @@ struct FPlayerPoint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator rotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector targetVelocity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsFalling;
+
 	FPlayerPoint()
 	{
 
 	}
 
-	FPlayerPoint(FVector pos, FRotator rot)
+	FPlayerPoint(FVector pos, FRotator rot, FVector vel, bool falling)
 	{
 		position = pos;
 		rotation = rot;
+		targetVelocity = vel;
+		bIsFalling = falling;
 	}
 
 };
@@ -52,7 +61,7 @@ public:
 
 	TDoubleLinkedList<FPlayerPoint*> PlayerPoints;
 		
-	APawn* Target;
+	ABasePlayer* Target;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawner")
 	TSubclassOf<AEnemy> EnemyToSpawn;

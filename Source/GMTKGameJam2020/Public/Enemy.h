@@ -33,9 +33,13 @@ private:
 
 	void FollowTarget();
 
-	int32 PointIndex = 0;
-
 	TDoubleLinkedList<FPlayerPoint*>::TDoubleLinkedListNode* CurrentPoint;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CloneMovement", meta = (AllowPrivateAccess = "true"))
+	bool bIsFalling = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CloneMovement", meta = (AllowPrivateAccess = "true"))
+	FVector Velocity;
 
 	bool bFoundFirstPlayerPoint = false;
 

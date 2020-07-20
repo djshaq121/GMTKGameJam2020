@@ -51,19 +51,15 @@ void AEnemy::FollowTarget()
 	if (!CurrentPoint)
 		return;
 
-
-	//auto TargetList = SpawnerOwner->PlayerPoints.GetTail;
-	//SpawnerOwner->PlayerPoints
-	//int32 index = SpawnerOwner->PlayerPoints.Num() - PointIndex - 1;
-	//if (index < 0)
-		//return;
-
 	auto playerPoint = CurrentPoint->GetValue();
 	if (!playerPoint)
 		return;
 
 	auto loc = playerPoint->position;
 	auto rot = playerPoint->rotation; 
+	bIsFalling = playerPoint->bIsFalling;
+	Velocity = playerPoint->targetVelocity;
+
 
 	SetActorLocationAndRotation(loc, rot);
 
